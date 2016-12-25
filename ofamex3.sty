@@ -1,0 +1,206 @@
+%%%% ofamex3.sty by ymt %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 3-rd level:
+%  \DeclareMathSymbol 等を直接拡張し，omega拡張に合うものにする．
+%  omega拡張(\omathchardef等)と e-TeX拡張(\numexpr等)がなされていないと
+%  正常に動作はしない．
+%  latex.ltx のマクロを書き換えて作成している．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProvidesFile{ofamex3.sty}%
+  [2009/02/20 v0.01 wide mathsymbol (omega style, 256FAM, 65536MATHCODE)]
+%\mathchardef\max@mathgroup=\@cclvi% \@cclvi=256
+\def\DeclareMathSymbol#1#2#3#4{%
+  \expandafter\in@\csname sym#3\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+    \begingroup
+      \if\relax\noexpand#1% is command?
+        \edef\reserved@a{\noexpand\in@{\string\mathchar}{\meaning#1}}%
+        \reserved@a
+        \ifin@
+          \oset@mathsymbol{#1}{#2}{#3}{#4}%
+          \@font@info{Redeclaring math symbol \string#1}%
+        \else
+            \expandafter\ifx
+            \csname\expandafter\@gobble\string#1\endcsname
+            \relax
+            \oset@mathsymbol{#1}{#2}{#3}{#4}%
+          \else
+            \@latex@error{Command `\string#1' already defined}\@eha
+          \fi
+        \fi
+      \else
+        \oset@mathchar{#1}{#2}{#3}{#4}%
+      \fi
+    \endgroup
+  \else
+    \@latex@error{Symbol font `#3' is not defined}\@eha
+  \fi
+}
+%\@onlypreamble\DeclareMathSymbol
+\def\oset@mathsymbol#1#2#3#4{%
+  \global\omathchardef#1%
+    \number
+    \numexpr"1000000*\mathchar@type#2+"10000*\csname sym#3\endcsname+#4}
+\@onlypreamble\oset@mathsymbol
+\def\oset@mathchar#1#2#3#4{%
+  \global\omathcode`#1=%
+    \number
+    \numexpr"1000000*\mathchar@type#2+"10000*\csname sym#3\endcsname+#4}
+\@onlypreamble\oset@mathchar
+\def\DeclareMathAccent#1#2#3#4{%
+  \expandafter\in@\csname sym#3\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+    \begingroup
+      \if\relax\noexpand#1% is command?
+        \edef\reserved@a{\noexpand\in@{\string\mathaccent}{\meaning#1}}%
+        \reserved@a
+        \ifin@
+          \oset@mathaccent{#1}{#2}{#3}{#4}%
+          \@font@info{Redeclaring math accent \string#1}%
+        \else
+          \expandafter\ifx
+          \csname\expandafter\@gobble\string#1\endcsname
+          \relax
+            \oset@mathaccent{#1}{#2}{#3}{#4}%
+          \else
+            \@latex@error{Command `\string#1' already defined}\@eha
+          \fi
+        \fi
+      \else
+       \@latex@error{Not a command name: `\noexpand#1'}\@eha
+      \fi
+    \endgroup
+  \else
+    \@latex@error{Symbol font `#3' is not defined}\@eha
+  \fi
+}
+%\@onlypreamble\DeclareMathAccent
+\def\oset@mathaccent#1#2#3#4{%
+  \xdef#1{\omathaccent%
+    \number
+    \numexpr"1000000*\mathchar@type#2+"10000*\csname sym#3\endcsname+#4}}
+\@onlypreamble\oset@mathaccent
+%\def\DeclareMathDelimiter#1{%
+%  \if\relax\noexpand#1%
+%    \expandafter\@DeclareMathDelimiter
+%  \else
+%    \expandafter\@xxDeclareMathDelimiter
+%  \fi
+%  #1}
+%\@onlypreamble\DeclareMathDelimiter
+%\def\@xxDeclareMathDelimiter#1#2#3#4{%
+%   \begingroup
+%    \let\mathalpha\mathord
+%    \ifnum7=\mathchar@type{#2}%
+%      \endgroup
+%      \expandafter\@firstofone
+%    \else
+%      \endgroup
+%      \DeclareMathSymbol#1{#2}{#3}{#4}%
+%      \expandafter\@firstoftwo
+%    \fi
+%    {\@xDeclareMathDelimiter#1}{#2}{#3}{#4}}
+%\@onlypreamble\@xxDeclareMathDelimiter
+\def\@DeclareMathDelimiter#1#2#3#4#5#6{%
+  \expandafter\in@\csname sym#3\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+    \expandafter\in@\csname sym#5\expandafter\endcsname
+       \expandafter{\group@list}%
+    \ifin@
+      \begingroup
+        \edef\reserved@a{\noexpand\in@{\string\delimiter}{\meaning#1}}%
+        \reserved@a
+        \ifin@
+          \oset@mathdelimiter{#1}{#2}{#3}{#4}{#5}{#6}%
+          \@font@info{Redeclaring math delimiter \string#1}%
+        \else
+            \expandafter\ifx
+            \csname\expandafter\@gobble\string#1\endcsname
+            \relax
+            \oset@mathdelimiter{#1}{#2}{#3}{#4}{#5}{#6}%
+          \else
+            \@latex@error{Command `\string#1' already defined}\@eha
+          \fi
+        \fi
+      \endgroup
+    \else
+      \@latex@error{Symbol font `#5' is not defined}\@eha
+    \fi
+  \else
+    \@latex@error{Symbol font `#3' is not defined}\@eha
+  \fi
+}
+%\@onlypreamble\@DeclareMathDelimiter
+\def\@xDeclareMathDelimiter#1#2#3#4#5{%
+  \expandafter\in@\csname sym#2\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+    \expandafter\in@\csname sym#4\expandafter\endcsname
+       \expandafter{\group@list}%
+    \ifin@
+      \oset@@mathdelimiter{#1}{#2}{#3}{#4}{#5}%
+    \else
+      \@latex@error{Symbol font `#4' is not defined}\@eha
+    \fi
+  \else
+    \@latex@error{Symbol font `#2' is not defined}\@eha
+  \fi
+}
+%\@onlypreamble\@xDeclareMathDelimiter
+\def\oset@mathdelimiter#1#2#3#4#5#6{%
+  \begingroup
+  \count\z@
+    \numexpr"1000000*\mathchar@type#2+"10000*\csname sym#3\endcsname+#4%
+  \count\tw@
+    \numexpr"10000*\csname sym#5\endcsname+#6%
+  \xdef#1{\odelimiter\number\count\z@\space \number\count\tw@}%
+  \endgroup
+}
+\@onlypreamble\oset@mathdelimiter
+\def\oset@@mathdelimiter#1#2#3#4#5{%
+  \begingroup
+  \count\z@\numexpr"10000*\csname sym#2\endcsname+#3%
+  \count\tw@\numexpr"10000*\csname sym#4\endcsname+#5%
+  \global\odelcode`#1=\number\count\z@\space \number\count\tw@
+  \endgroup
+}
+\@onlypreamble\oset@@mathdelimiter
+\def\DeclareMathRadical#1#2#3#4#5{%
+  \expandafter\ifx
+       \csname\expandafter\@gobble\string#1\endcsname
+       \relax
+     \let#1\radical
+  \fi
+  \edef\reserved@a{\noexpand\in@{\string\radical}{\meaning#1}}%
+  \reserved@a
+  \ifin@
+    \expandafter\in@\csname sym#2\expandafter\endcsname
+       \expandafter{\group@list}%
+    \ifin@
+      \expandafter\in@\csname sym#4\expandafter\endcsname
+         \expandafter{\group@list}%
+      \ifin@
+        \oset@mathradical{#1}{#2}{#3}{#4}{#5}%
+      \else
+        \@latex@error{Symbol font `#4' is not defined}\@eha
+      \fi
+    \else
+      \@latex@error{Symbol font `#2' is not defined}\@eha
+    \fi
+  \else
+    \@latex@error{Command `\string#1' already defined}\@eha
+  \fi
+}
+%\@onlypreamble\DeclareMathRadical
+\def\oset@mathradical#1#2#3#4#5{%
+  \begingroup
+  \count\z@\numexpr"10000*\csname sym#2\endcsname+#3%
+  \count\tw@\numexpr"10000*\csname sym#4\endcsname+#5%
+  \xdef#1{\oradical\number\count\z@\space \number\count\tw@}%
+  \endgroup
+}
+\@onlypreamble\oset@mathradical
+\endinput
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

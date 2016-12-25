@@ -1,0 +1,59 @@
+%%%% ofamex1.sty by ymt %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 1-st level:
+%  \DeclareMathAlphabet で定義された \math?? の制限を緩める．
+%  latex.ltx のマクロをほんの少し書き換えたものである．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProvidesFile{ofamex1.sty}[2009/02/20 v0.01 extend mathgroup for mathalphabet]
+\mathchardef\max@mathgroup=\@cclvi% \@cclvi=256
+\def\document@select@group#1#2#3#4{%
+ \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
+ {%
+ \ifmmode
+   \ifnum\csname c@mv@\math@version\endcsname<\max@mathgroup
+     \begingroup
+       \escapechar\m@ne
+       \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
+       \globaldefs\@ne  \math@fonts
+     \endgroup
+     \expandafter\extract@alph@from@version
+         \csname mv@\math@version\expandafter\endcsname
+         \expandafter{\number\csname
+                       c@mv@\math@version\endcsname}%
+          #1%
+     \global\advance\csname c@mv@\math@version\endcsname\@ne
+   \else
+     \let#1\relax
+     \@latex@error{Too many math alphabets used
+                   in version \math@version}%
+        \@eha
+  \fi
+ \else \expandafter\non@alpherr\fi
+ #1{#4}%
+ }%
+}
+\def\select@group#1#2#3#4{%
+ \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
+ {%
+ \ifmmode
+  \ifnum\csname c@mv@\math@version\endcsname<\max@mathgroup
+     \begingroup
+       \escapechar\m@ne
+       \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
+       \globaldefs\@ne  \math@fonts
+     \endgroup
+     \init@restore@version
+     \xdef#1{\noexpand\use@mathgroup\noexpand#2%
+             {\number\csname c@mv@\math@version\endcsname}}%
+     \global\advance\csname c@mv@\math@version\endcsname\@ne
+   \else
+     \let#1\relax
+     \@latex@error{Too many math alphabets used in
+                   version \math@version}%
+        \@eha
+   \fi
+ \else \expandafter\non@alpherr\fi
+ #1{#4}%
+ }%
+}
+\endinput
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
