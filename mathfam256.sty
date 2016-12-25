@@ -14,61 +14,84 @@
 \ProvidesPackage{mathfam256}
   [2016/12/26 v0.1 Extend math family up to 256]
 
-%%%% ofamex1.sty by ymt %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mathchardef\e@mathgroup@top=\@cclvi% \@cclvi=256
-\def\document@select@group#1#2#3#4{%
- \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
- {%
- \ifmmode
-   \ifnum\csname c@mv@\math@version\endcsname<\e@mathgroup@top
-     \begingroup
-       \escapechar\m@ne
-       \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
-       \globaldefs\@ne  \math@fonts
-     \endgroup
-     \expandafter\extract@alph@from@version
-         \csname mv@\math@version\expandafter\endcsname
-         \expandafter{\number\csname
-                       c@mv@\math@version\endcsname}%
-          #1%
-     \global\advance\csname c@mv@\math@version\endcsname\@ne
-   \else
-     \let#1\relax
-     \@latex@error{Too many math alphabets used
-                   in version \math@version}%
-        \@eha
-  \fi
- \else \expandafter\non@alpherr\fi
- #1{#4}%
- }%
+%% engine check
+\ifx\omathchar\@undefined
+  \PackageError{mathfam256}{%
+    Sorry, this package requires Omega-like engine features.\MessageBreak
+    Currently only the following formats are known:\MessageBreak
+    * pLaTeX (run on e-pTeX)\MessageBreak
+    * upLaTeX (run on e-upTeX)\MessageBreak
+    * Lamed (run on Aleph)\MessageBreak
+    It seems you are running unsupported engine}\@ehc
+\fi
+\ifx\numexpr\@undefined
+  \PackageError{mathfam256}{This package requires e-TeX features}\@ehc
+\fi
+
+%% engine check has been done, so always 256
+\mathchardef\e@mathgroup@top=\@cclvi
+
+%% patch LaTeX2e internal only if older than 2015/01/01
+\@ifl@t@r\fmtversion{2015/01/01}{}{%
+  %% Increase math alphabet up to 256
+  \PackageWarning{mathfam256}{Patch for \noexpand\document@select@group applied}%
+  \def\document@select@group#1#2#3#4{%
+   \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
+   {%
+   \ifmmode
+     \ifnum\csname c@mv@\math@version\endcsname<\e@mathgroup@top
+       \begingroup
+         \escapechar\m@ne
+         \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
+         \globaldefs\@ne  \math@fonts
+       \endgroup
+       \expandafter\extract@alph@from@version
+           \csname mv@\math@version\expandafter\endcsname
+           \expandafter{\number\csname
+                         c@mv@\math@version\endcsname}%
+            #1%
+       \global\advance\csname c@mv@\math@version\endcsname\@ne
+     \else
+       \let#1\relax
+       \@latex@error{Too many math alphabets used
+                     in version \math@version}%
+          \@eha
+    \fi
+   \else \expandafter\non@alpherr\fi
+   #1{#4}%
+   }%
+  }%
+  \PackageWarning{mathfam256}{Patch for \noexpand\select@group applied}%
+  \def\select@group#1#2#3#4{%
+   \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
+   {%
+   \ifmmode
+    \ifnum\csname c@mv@\math@version\endcsname<\e@mathgroup@top
+       \begingroup
+         \escapechar\m@ne
+         \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
+         \globaldefs\@ne  \math@fonts
+       \endgroup
+       \init@restore@version
+       \xdef#1{\noexpand\use@mathgroup\noexpand#2%
+               {\number\csname c@mv@\math@version\endcsname}}%
+       \global\advance\csname c@mv@\math@version\endcsname\@ne
+     \else
+       \let#1\relax
+       \@latex@error{Too many math alphabets used in
+                     version \math@version}%
+          \@eha
+     \fi
+   \else \expandafter\non@alpherr\fi
+   #1{#4}%
+   }%
+  }%
+  %% Increase math symbol up to 256
+  \def\new@mathgroup
+    {\e@alloc\mathgroup\chardef{\count18}\m@ne\e@mathgroup@top}%
 }
-\def\select@group#1#2#3#4{%
- \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
- {%
- \ifmmode
-  \ifnum\csname c@mv@\math@version\endcsname<\e@mathgroup@top
-     \begingroup
-       \escapechar\m@ne
-       \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
-       \globaldefs\@ne  \math@fonts
-     \endgroup
-     \init@restore@version
-     \xdef#1{\noexpand\use@mathgroup\noexpand#2%
-             {\number\csname c@mv@\math@version\endcsname}}%
-     \global\advance\csname c@mv@\math@version\endcsname\@ne
-   \else
-     \let#1\relax
-     \@latex@error{Too many math alphabets used in
-                   version \math@version}%
-        \@eha
-   \fi
- \else \expandafter\non@alpherr\fi
- #1{#4}%
- }%
-}
-%%%% ofamex2.sty by ymt %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\def\new@mathgroup
-  {\e@alloc\mathgroup\chardef{\count18}\m@ne\e@mathgroup@top}
+
+%% use \omath... primitives for low-level commands
 \def\set@mathchar#1#2#3#4{%
   \ifnum#1<\sixt@@n
     \global\mathcode`#2="\mathchar@type#3\hexnumber@#1#4\relax
@@ -170,6 +193,10 @@
   \fi
 }
 \@onlypreamble\set@mathradical
+
+%% patch for \hexnumber@ (e.g. amsfonts.sty contains some codes like
+%%   \edef\yen{\noexpand\mathhexbox{\hexnumber@\symAMSa}55}
+%% this should work as well)
 \def\mathhexbox#1#2#3{%
   \ifnum"#1<\sixt@@n
     \mbox{$\m@th \mathchar"#1#2#3$}%
@@ -222,44 +249,50 @@
           F9\or FA\or FB\or FC\or FD\or FE\or FF
   \fi
 }
-\def\DeclareSymbolFont#1#2#3#4#5{%
- \@tempswafalse
- \edef\reserved@b{#2}%
- \def\cdp@elt##1##2##3##4{\def\reserved@c{##1}%
-      \ifx\reserved@b\reserved@c \@tempswatrue\fi}%
- \cdp@list
- \if@tempswa
-   \@ifundefined{sym#1}{%
-      \ifnum\count18<\e@mathgroup@top
-        \expandafter\new@mathgroup\csname sym#1\endcsname
-        \expandafter\new@symbolfont\csname sym#1\endcsname
-                        {#2}{#3}{#4}{#5}%
-      \else
-         \@latex@error{Too many symbol fonts declared}\@eha
-      \fi
-     }%
-     {%
-      \@font@info{Redeclaring symbol font `#1'}%
-      \def\group@elt##1##2{%
-           \noexpand\group@elt\noexpand##1%
-           \expandafter\ifx\csname sym#1\endcsname##1%
-             \expandafter\noexpand\csname#2/#3/#4/#5\endcsname
-           \else
-               \noexpand##2%
-           \fi}%
-      \xdef\group@list{\group@list}%
-      \def\version@elt##1{%
-          \expandafter
-          \SetSymbolFont@\expandafter##1\csname#2/#3/#4/#5\expandafter
-              \endcsname \csname sym#1\endcsname
-          }%
-      \version@list
-     }%
-  \else
-    \@latex@error{Encoding scheme  `#2' unknown}\@eha
-  \fi
-  }
-%%%% ofamex3.sty by ymt %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% patch LaTeX2e internal only if newer than (or equal to) 2015/01/01
+%% since the error code was introduced at that time
+\@ifl@t@r\fmtversion{2015/01/01}{%
+  \def\DeclareSymbolFont#1#2#3#4#5{%
+   \@tempswafalse
+   \edef\reserved@b{#2}%
+   \def\cdp@elt##1##2##3##4{\def\reserved@c{##1}%
+        \ifx\reserved@b\reserved@c \@tempswatrue\fi}%
+   \cdp@list
+   \if@tempswa
+     \@ifundefined{sym#1}{%
+        \ifnum\count18<\e@mathgroup@top
+          \expandafter\new@mathgroup\csname sym#1\endcsname
+          \expandafter\new@symbolfont\csname sym#1\endcsname
+                          {#2}{#3}{#4}{#5}%
+        \else
+           \@latex@error{Too many symbol fonts declared}\@eha
+        \fi
+       }%
+       {%
+        \@font@info{Redeclaring symbol font `#1'}%
+        \def\group@elt##1##2{%
+             \noexpand\group@elt\noexpand##1%
+             \expandafter\ifx\csname sym#1\endcsname##1%
+               \expandafter\noexpand\csname#2/#3/#4/#5\endcsname
+             \else
+                 \noexpand##2%
+             \fi}%
+        \xdef\group@list{\group@list}%
+        \def\version@elt##1{%
+            \expandafter
+            \SetSymbolFont@\expandafter##1\csname#2/#3/#4/#5\expandafter
+                \endcsname \csname sym#1\endcsname
+            }%
+        \version@list
+       }%
+    \else
+      \@latex@error{Encoding scheme  `#2' unknown}\@eha
+    \fi
+  }%
+}{}
+
+%% use \omath... primitives for high-level commands
 \def\DeclareMathSymbol#1#2#3#4{%
   \expandafter\in@\csname sym#3\expandafter\endcsname
      \expandafter{\group@list}%
@@ -454,6 +487,6 @@
   \endgroup
 }
 \@onlypreamble\oset@mathradical
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% all done
 \endinput
