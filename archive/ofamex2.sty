@@ -8,9 +8,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ProvidesFile{ofamex2.sty}%
   [2009/02/20 v0.01 extend mathgroup for mathsymbol (omega style)]
-%\mathchardef\e@mathgroup@top=\@cclvi% \@cclvi=256
-\def\new@mathgroup
-  {\e@alloc\mathgroup\chardef{\count18}\m@ne\e@mathgroup@top}
+%\mathchardef\max@mathgroup=\@cclvi% \@cclvi=256
+\def\new@mathgroup{\alloc@8\mathgroup\chardef\max@mathgroup}
 \def\set@mathchar#1#2#3#4{%
   \ifnum#1<\sixt@@n
     \global\mathcode`#2="\mathchar@type#3\hexnumber@#1#4\relax
@@ -59,8 +58,7 @@
        \relax
      \let#1\radical
   \fi
-  \edef\reserved@a{\noexpand\in@
-       {\expandafter\@gobble\string\radical}{\meaning#1}}%
+  \edef\reserved@a{\noexpand\in@{\string\radical}{\meaning#1}}%
   \reserved@a
   \ifin@
     \expandafter\in@\csname sym#2\expandafter\endcsname
@@ -164,44 +162,5 @@
           F9\or FA\or FB\or FC\or FD\or FE\or FF
   \fi
 }
-%%%
-\def\DeclareSymbolFont#1#2#3#4#5{%
- \@tempswafalse
- \edef\reserved@b{#2}%
- \def\cdp@elt##1##2##3##4{\def\reserved@c{##1}%
-      \ifx\reserved@b\reserved@c \@tempswatrue\fi}%
- \cdp@list
- \if@tempswa
-   \@ifundefined{sym#1}{%
-      \ifnum\count18<\e@mathgroup@top
-        \expandafter\new@mathgroup\csname sym#1\endcsname
-        \expandafter\new@symbolfont\csname sym#1\endcsname
-                        {#2}{#3}{#4}{#5}%
-      \else
-         \@latex@error{Too many symbol fonts declared}\@eha
-      \fi
-     }%
-     {%
-      \@font@info{Redeclaring symbol font `#1'}%
-      \def\group@elt##1##2{%
-           \noexpand\group@elt\noexpand##1%
-           \expandafter\ifx\csname sym#1\endcsname##1%
-             \expandafter\noexpand\csname#2/#3/#4/#5\endcsname
-           \else
-               \noexpand##2%
-           \fi}%
-      \xdef\group@list{\group@list}%
-      \def\version@elt##1{%
-          \expandafter
-          \SetSymbolFont@\expandafter##1\csname#2/#3/#4/#5\expandafter
-              \endcsname \csname sym#1\endcsname
-          }%
-      \version@list
-     }%
-  \else
-    \@latex@error{Encoding scheme  `#2' unknown}\@eha
-  \fi
-  }
-%%%
 \endinput
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -4,12 +4,12 @@
 %  latex.ltx のマクロをほんの少し書き換えたものである．
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ProvidesFile{ofamex1.sty}[2009/02/20 v0.01 extend mathgroup for mathalphabet]
-\mathchardef\e@mathgroup@top=\@cclvi% \@cclvi=256
+\mathchardef\max@mathgroup=\@cclvi% \@cclvi=256
 \def\document@select@group#1#2#3#4{%
  \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
  {%
  \ifmmode
-   \ifnum\csname c@mv@\math@version\endcsname<\e@mathgroup@top
+   \ifnum\csname c@mv@\math@version\endcsname<\max@mathgroup
      \begingroup
        \escapechar\m@ne
        \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
@@ -35,7 +35,7 @@
  \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
  {%
  \ifmmode
-  \ifnum\csname c@mv@\math@version\endcsname<\e@mathgroup@top
+  \ifnum\csname c@mv@\math@version\endcsname<\max@mathgroup
      \begingroup
        \escapechar\m@ne
        \getanddefine@fonts{\csname c@mv@\math@version\endcsname}#3%
