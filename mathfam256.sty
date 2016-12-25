@@ -34,7 +34,7 @@
 %% patch LaTeX2e internal only if older than 2015/01/01
 \@ifl@t@r\fmtversion{2015/01/01}{}{%
   %% Increase math alphabet up to 256
-  \PackageWarning{mathfam256}{Patch for \noexpand\document@select@group applied}%
+  \PackageInfo{mathfam256}{Patch for \noexpand\document@select@group applied}%
   \def\document@select@group#1#2#3#4{%
    \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
    {%
@@ -61,7 +61,7 @@
    #1{#4}%
    }%
   }%
-  \PackageWarning{mathfam256}{Patch for \noexpand\select@group applied}%
+  \PackageInfo{mathfam256}{Patch for \noexpand\select@group applied}%
   \def\select@group#1#2#3#4{%
    \ifx\math@bgroup\bgroup\else\relax\expandafter\@firstofone\fi
    {%
@@ -87,6 +87,7 @@
    }%
   }%
   %% Increase math symbol up to 256
+  \PackageInfo{mathfam256}{Patch for \noexpand\new@mathgroup applied}%
   \def\new@mathgroup
     {\e@alloc\mathgroup\chardef{\count18}\m@ne\e@mathgroup@top}%
 }
@@ -253,6 +254,7 @@
 %% patch LaTeX2e internal only if newer than (or equal to) 2015/01/01
 %% since the error code was introduced at that time
 \@ifl@t@r\fmtversion{2015/01/01}{%
+  \PackageInfo{mathfam256}{Patch for \noexpand\DeclareSymbolFont applied}%
   \def\DeclareSymbolFont#1#2#3#4#5{%
    \@tempswafalse
    \edef\reserved@b{#2}%
