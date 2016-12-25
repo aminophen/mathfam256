@@ -1,11 +1,16 @@
 # mathfam256
 
-This package increases the upper limit of math symbols to from 16 (LaTeX2e default)
+LaTeX2e kernel 2015/01/01 increased the upper limit of math alphabets from 16
+to 256 for XeTeX/LuaTeX. Also, pLaTeX2e kernel 2016/11/29 introduced the similar
+change for e-pTeX/e-upTeX. However, the upper limit for math symbol families
+remains unchanged, so only 16 symbol fonts are available.
+
+This package increases the upper limit of math symbols from 16 (LaTeX2e default)
 to 256, using `\omath...` primitives. These primitives are originally introduced
 in Omega, and are currently available in the followings:
 
 - e-pTeX/e-upTeX (Japanese TeX engine)
-- Aleph (sucessor of Omega)
+- Aleph (successor of Omega)
 
 ## Supported formats
 
