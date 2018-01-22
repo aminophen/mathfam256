@@ -1,0 +1,34 @@
+% texqa52767 (modified)
+% https://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52767.html
+\count18=200 % 既に201個使われた状態にする
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \c@mv@.... の値を \count18+1 にセットする マクロ
+\def\setMVNtoSYN{%
+  \begingroup
+  \advance\count18\@ne
+  \def\version@elt##1{%
+    \csname c@\expandafter\@gobble\string##1\endcsname=\number\count18\relax
+  }%
+  \global\version@list
+  \endgroup
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatother
+\documentclass{article}
+\usepackage{mathfam256}
+\usepackage{amssymb}
+\pagestyle{empty}
+\AtBeginDocument{\setMVNtoSYN}% 必ず \begin{document} の直前で使うこと
+\begin{document}
+test for mathalphabet:\par
+$\mathbf{BOLD\ fam=\the\fam},\ 
+ \mathsf{SANS\ SERIF\ fam=\the\fam}$
+
+\bigskip
+test for AMS-symbols:\par
+$\boxdot,\ \therefore,\ \nexists,\ \varsupsetneq\ \ 
+\mathrm{symAMSa=\the\symAMSa,\ symAMSb=\the\symAMSb}$
+
+$\yen,\ \rightleftharpoons,\ \ulcorner,\ \mho$
+\end{document}
