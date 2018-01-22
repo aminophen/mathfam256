@@ -1,0 +1,145 @@
+%# -*- coding: utf-8 -*-
+\ifx\epTeXinputencoding\undefined\else % defined in e-pTeX (> TL2016)
+  \epTeXinputencoding utf8    % ensure utf-8 encoding for platex
+\fi
+
+\documentclass[a4paper]{jsarticle}
+\usepackage{doc}
+\usepackage{mathfam256}
+\GetFileInfo{mathfam256.sty}
+\usepackage{array}
+\usepackage{url}
+\newcommand{\OMEGA}{$\Omega$}
+\def\pTeX{p\kern-.15em\TeX}
+\def\upTeX{u\pTeX}
+\def\eTeX{$\varepsilon$-\TeX}
+\def\epTeX{$\varepsilon$-\pTeX}
+\def\eupTeX{$\varepsilon$-\upTeX}
+\title{Package \textsf{mathfam256} \fileversion}
+\author{Hironobu Yamashita}
+\date{\filedate}
+\begin{document}
+
+\maketitle
+
+\parindent15pt
+
+In classic \TeX\ and \eTeX, the upper limit of math groups (\verb+\fam+)
+is limited to 16. However, these days some \TeX\ variants support
+math groups up to 256.
+
+In light of this situation, the \LaTeXe\ kernel 2015/01/01 increased
+the upper limit of math alphabets to 256 for
+Xe\TeX\ and Lua\TeX\ (Unicode \TeX\ variants).
+Also, the \pLaTeXe/\upLaTeXe\ kernel 2016/11/29 introduced the similar
+change for \epTeX/\eupTeX\ (``FAM256'' patch based on \OMEGA\ is applied).
+
+However, the ``native'' kernel support is limited:
+\begin{itemize}
+\item Lamed (\LaTeX\ on Aleph) is not supported at all.
+\item The upper limit for math symbol families is still limited to 16.
+\end{itemize}
+
+The package \textsf{mathfam256} is an attempt to resolve this situation;
+increases the upper limit of math symbols from 16 (\LaTeXe\ default)
+to 256, using \verb+\omath...+ primitives.
+
+The package is maintained on GitHub:
+\begin{quote}
+  \url{https://github.com/aminophen/mathfam256}
+\end{quote}
+
+\section*{Requirements}
+
+The \verb+\omath...+ primitives are originally introduced in
+\OMEGA\ (Omega), and are currently available in the followings.
+Without one of these, the package causes an error.
+\begin{itemize}
+\item \pLaTeX/\upLaTeX, run on \epTeX/\eupTeX\ (Japanese TeX engine)
+\item Lamed, run on Aleph (successor of \OMEGA)
+\end{itemize}
+
+\section*{Usage}
+
+Load it in the preamble; it is recommended to load it as fast as
+possible.
+\begin{verbatim}
+  \documentclass[a4paper]{article}
+  \usepackage{mathfam256}
+  \usepackage{...}% other packages
+  \begin{document}
+  The content
+  \end{document}
+\end{verbatim}
+
+\bigskip
+
+\parindent1zw
+
+オリジナルの\TeX や“素”の\eTeX では、数式ファミリ(\verb+\fam+)の
+上限が16個に制限されていました。しかし、最近の新しい\TeX エンジンの中には、
+256個までの数式ファミリをサポートするものが現れています。
+
+この状況を鑑み、\LaTeXe カーネル（2015/01/01以降）では、
+Unicode対応のXe\TeX とLua\LaTeX について、数式ファミリ（正確には
+\verb+\DeclareMathAlphebet+で使われる数式アルファベット）の上限を256に
+増やしています。同様に、\pLaTeXe/\upLaTeXe カーネル（2016/11/29以降）も、
+\OMEGA ベースのいわゆる「FAM256パッチ」が適用された\epTeX/\eupTeX について、
+数式ファミリの上限を256に増やしています。これらにより
+\begin{verbatim}
+  ! LaTeX Error: Too many math alphabets used in version normal.
+\end{verbatim}
+というエラーが発生しにくくなっています。
+
+しかし、この“ネイティブな”カーネルのサポートには限界があります：
+\begin{itemize}
+\item Lamed (\LaTeX\ on Aleph)は全く考慮されていない。
+\item 数式シンボルフォントの上限は依然として16のままである（安全のため）。
+\end{itemize}
+
+この\textsf{mathfam256}パッケージは、この状況を改善する試みです。
+すなわち、\OMEGA 由来の\verb+\omath...+プリミティブを用いて、
+数式シンボルフォントの上限を256に増やします。
+
+\section*{動作条件}
+
+もともと\OMEGA\ (Omega)に導入された\verb+\omath...+プリミティブが
+必要です。これが実装されているのは、以下のフォーマット（エンジン）です。
+これ以外でパッケージが使われて場合はエラー終了します。
+\begin{itemize}
+\item \pLaTeX/\upLaTeX （\epTeX/\eupTeX 上で動作）
+\item Lamed（\OMEGA の後継であるAleph上で動作）
+\end{itemize}
+
+\section*{使い方}
+
+プリアンブルで読み込みます。なるべく早めに読み込むことをお勧めします。
+\begin{verbatim}
+  \documentclass[a4paper]{article}
+  \usepackage{mathfam256}
+  \usepackage{...}% other packages
+  \begin{document}
+  …本文…
+  \end{document}
+\end{verbatim}
+
+\section*{謝辞}
+
+本パッケージは\cite{yamamoto}〜\cite{yamamoto3}を元に、
+新しい\LaTeX に対応させることで作られました。
+
+\begin{thebibliography}{99}
+ \bibitem{yamamoto} 山本 和義，「数式famの制限とluatex」，
+  掲示板「\TeX\ Q\ \&\ A」，2009/02/12．\\
+  \url{http://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52744.html}
+ \bibitem{yamamoto2} 山本 和義，「Re: 数式famの制限とluatex」，
+  掲示板「\TeX\ Q\ \&\ A」，2009/02/16．\\
+  \url{http://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52767.html}
+ \bibitem{yamamoto3} 山本 和義，「数式fam拡張マクロ for e-pTeX等」，
+  掲示板「\TeX\ Q\ \&\ A」，2009/02/21．\\
+  \url{http://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52799.html}
+ \bibitem{eptexdoc} 北川 弘典，「\epTeX について」．\\
+  \verb+$TEXMFDIST/doc/ptex/ptex-base/etex_man.pdf+
+\end{thebibliography}
+
+\end{document}
