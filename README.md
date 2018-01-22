@@ -18,7 +18,7 @@ The package mathfam256.sty works on the following formats:
 
 - pLaTeX (run on e-pTeX)
 - upLaTeX (run on e-upTeX)
-- lamed (run on Aleph)
+- Lamed (run on Aleph)
 
 All of these are enabled in TeX Live by default.
 
@@ -29,7 +29,8 @@ This package is maintained on GitHub:
 
 ## License
 
-To be determined...
+This package may be distributed and/or modified under the terms of
+the 3-clause BSD license (see [LICENSE](./LICENSE)).
 
 ## Release Date
 
