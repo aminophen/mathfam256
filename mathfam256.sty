@@ -93,6 +93,17 @@
     {\e@alloc\mathgroup\chardef{\count18}\m@ne\e@mathgroup@top}%
 }
 
+%% LaTeX2e 2019/10/01 makes lots of commands robust;
+%% follow both old and new behavior
+\edef\omfcclvi@reset{%
+  \catcode`\&=\the\catcode`\&\relax
+  \let\noexpand\omfcclvi@reset\noexpand\@undefined}
+\@ifl@t@r\fmtversion{2019/10/01}{%
+  \catcode`\&=9\relax
+}{%
+  \catcode`\&=14\relax
+}
+
 %% use \omath... primitives for low-level commands
 \def\set@mathchar#1#2#3#4{%
   \ifnum#1<\sixt@@n
@@ -114,6 +125,7 @@
   \else
     \xdef#2{\omathaccent"\mathchar@type#3\hexnumber@@#100#4\relax}%
   \fi
+& \MakeRobust#2%
 }
 \def\set@mathdelimiter#1#2#3#4#5#6{%
   \@tempswatrue
@@ -125,6 +137,7 @@
     \xdef#3{\odelimiter"\mathchar@type#4\hexnumber@@#100#5%
                        "\hexnumber@@#200#6\relax}%
   \fi
+& \MakeRobust#3%
 }
 \def\set@@mathdelimiter#1#2#3#4#5{%
   \@tempswatrue
@@ -302,13 +315,18 @@
   \ifin@
     \begingroup
       \if\relax\noexpand#1% is command?
-        \edef\reserved@a{\noexpand\in@{\string\mathchar}{\meaning#1}}%
+        \edef\reserved@b{\expandafter\noexpand
+                         \csname\expandafter\@gobble\string#1\space\endcsname}%
+        \edef\reserved@a
+          {\noexpand\in@{\expandafter\@gobble\string\mathchar}%
+                        {\meaning#1\expandafter\meaning\reserved@b}}%
         \reserved@a
+        \global\expandafter\let\reserved@b\@undefined
         \ifin@
           \oset@mathsymbol{#1}{#2}{#3}{#4}%
           \@font@info{Redeclaring math symbol \string#1}%
         \else
-            \expandafter\ifx
+          \expandafter\ifx
             \csname\expandafter\@gobble\string#1\endcsname
             \relax
             \oset@mathsymbol{#1}{#2}{#3}{#4}%
@@ -341,9 +359,15 @@
   \ifin@
     \begingroup
       \if\relax\noexpand#1% is command?
-        \edef\reserved@a{\noexpand\in@{\string\mathaccent}{\meaning#1}}%
+        \edef\reserved@a{\noexpand\in@
+          {\expandafter\@gobble\string\mathaccent}
+          {\expandafter\meaning
+           \csname\expandafter\@gobble\string#1\space\endcsname}}%
         \reserved@a
         \ifin@
+          \expandafter\let
+            \csname\expandafter\@gobble\string#1\space\endcsname
+            \@undefined
           \oset@mathaccent{#1}{#2}{#3}{#4}%
           \@font@info{Redeclaring math accent \string#1}%
         \else
@@ -367,7 +391,9 @@
 \def\oset@mathaccent#1#2#3#4{%
   \xdef#1{\omathaccent%
     \number
-    \numexpr"1000000*\mathchar@type#2+"10000*\csname sym#3\endcsname+#4}}
+    \numexpr"1000000*\mathchar@type#2+"10000*\csname sym#3\endcsname+#4}%
+& \MakeRobust#1%
+}
 \@onlypreamble\oset@mathaccent
 %\def\DeclareMathDelimiter#1{%
 %  \if\relax\noexpand#1%
@@ -398,9 +424,12 @@
        \expandafter{\group@list}%
     \ifin@
       \begingroup
-        \edef\reserved@a{\noexpand\in@{\string\delimiter}{\meaning#1}}%
+        \edef\reserved@a{\noexpand\in@
+          {\expandafter\@gobble\string\delimiter}%
+          {\expandafter\meaning\csname\expandafter\@gobble\string#1\space\endcsname}}%
         \reserved@a
         \ifin@
+          \expandafter\let\csname\expandafter\@gobble\string#1\space\endcsname\@undefined
           \oset@mathdelimiter{#1}{#2}{#3}{#4}{#5}{#6}%
           \@font@info{Redeclaring math delimiter \string#1}%
         \else
@@ -445,6 +474,7 @@
     \numexpr"10000*\csname sym#5\endcsname+#6%
   \xdef#1{\odelimiter\number\count\z@\space \number\count\tw@}%
   \endgroup
+& \MakeRobust#1%
 }
 \@onlypreamble\oset@mathdelimiter
 \def\oset@@mathdelimiter#1#2#3#4#5{%
@@ -461,7 +491,8 @@
        \relax
      \let#1\radical
   \fi
-  \edef\reserved@a{\noexpand\in@{\string\radical}{\meaning#1}}%
+  \edef\reserved@a{\noexpand\in@
+       {\expandafter\@gobble\string\radical}{\meaning#1}}%
   \reserved@a
   \ifin@
     \expandafter\in@\csname sym#2\expandafter\endcsname
@@ -490,6 +521,9 @@
   \endgroup
 }
 \@onlypreamble\oset@mathradical
+
+%% reset
+\omfcclvi@reset
 
 %% all done
 \endinput
