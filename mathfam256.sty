@@ -24,9 +24,11 @@
     * upLaTeX (run on e-upTeX)\MessageBreak
     * Lamed (run on Aleph)\MessageBreak
     It seems you are running unsupported engine}\@ehc
+  \expandafter\endinput
 \fi
 \ifx\numexpr\@undefined
   \PackageError{mathfam256}{This package requires e-TeX features}\@ehc
+  \expandafter\endinput
 \fi
 
 %% engine check has been done, so always 256
