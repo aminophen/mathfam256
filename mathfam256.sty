@@ -98,12 +98,15 @@
 %% LaTeX2e 2019/10/01 makes lots of commands robust;
 %% follow both old and new behavior
 \edef\omfcclvi@reset{%
-  \catcode`\&=\the\catcode`\&\relax
+  \catcode`\noexpand\&=\the\catcode`\&\relax
+  \catcode`\noexpand\~=\the\catcode`\~\relax
   \let\noexpand\omfcclvi@reset\noexpand\@undefined}
 \@ifl@t@r\fmtversion{2019/10/01}{%
   \catcode`\&=9\relax
+  \catcode`\~=14\relax
 }{%
   \catcode`\&=14\relax
+  \catcode`\~=9\relax
 }
 
 %% use \omath... primitives for low-level commands
@@ -317,13 +320,14 @@
   \ifin@
     \begingroup
       \if\relax\noexpand#1% is command?
-        \edef\reserved@b{\expandafter\noexpand
-                         \csname\expandafter\@gobble\string#1\space\endcsname}%
+&       \edef\reserved@b{\expandafter\noexpand
+&                        \csname\expandafter\@gobble\string#1\space\endcsname}%
         \edef\reserved@a
           {\noexpand\in@{\expandafter\@gobble\string\mathchar}%
-                        {\meaning#1\expandafter\meaning\reserved@b}}%
+~                       {\meaning#1}}%
+&                       {\meaning#1\expandafter\meaning\reserved@b}}%
         \reserved@a
-        \global\expandafter\let\reserved@b\@undefined
+&       \global\expandafter\let\reserved@b\@undefined
         \ifin@
           \oset@mathsymbol{#1}{#2}{#3}{#4}%
           \@font@info{Redeclaring math symbol \string#1}%
@@ -362,14 +366,15 @@
     \begingroup
       \if\relax\noexpand#1% is command?
         \edef\reserved@a{\noexpand\in@
-          {\expandafter\@gobble\string\mathaccent}
-          {\expandafter\meaning
-           \csname\expandafter\@gobble\string#1\space\endcsname}}%
+~          {\expandafter\@gobble\string\mathaccent}{\meaning#1}}%
+&         {\expandafter\@gobble\string\mathaccent}
+&         {\expandafter\meaning
+&          \csname\expandafter\@gobble\string#1\space\endcsname}}%
         \reserved@a
         \ifin@
-          \expandafter\let
-            \csname\expandafter\@gobble\string#1\space\endcsname
-            \@undefined
+&         \expandafter\let
+&           \csname\expandafter\@gobble\string#1\space\endcsname
+&           \@undefined
           \oset@mathaccent{#1}{#2}{#3}{#4}%
           \@font@info{Redeclaring math accent \string#1}%
         \else
@@ -428,14 +433,15 @@
       \begingroup
         \edef\reserved@a{\noexpand\in@
           {\expandafter\@gobble\string\delimiter}%
-          {\expandafter\meaning\csname\expandafter\@gobble\string#1\space\endcsname}}%
+~         {\meaning#1}}%
+&         {\expandafter\meaning\csname\expandafter\@gobble\string#1\space\endcsname}}%
         \reserved@a
         \ifin@
-          \expandafter\let\csname\expandafter\@gobble\string#1\space\endcsname\@undefined
+&         \expandafter\let\csname\expandafter\@gobble\string#1\space\endcsname\@undefined
           \oset@mathdelimiter{#1}{#2}{#3}{#4}{#5}{#6}%
           \@font@info{Redeclaring math delimiter \string#1}%
         \else
-            \expandafter\ifx
+          \expandafter\ifx
             \csname\expandafter\@gobble\string#1\endcsname
             \relax
             \oset@mathdelimiter{#1}{#2}{#3}{#4}{#5}{#6}%
