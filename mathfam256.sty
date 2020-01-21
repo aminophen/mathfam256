@@ -1,5 +1,7 @@
 %
 % mathfam256.sty
+% 2020/01/22 v0.4  Hironobu Yamashita (aminophen)
+%   -- sync with LaTeX2e 2020-02-02 dev
 % 2019/09/14 v0.3  Hironobu Yamashita (aminophen)
 %   -- bug fix and support LaTeX2e 2019-10-01
 % 2018/01/22 v0.2  Hironobu Yamashita (aminophen)
@@ -16,7 +18,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{mathfam256}
-  [2019/09/14 v0.3 Extend math family up to 256]
+  [2020/01/22 v0.4 Extend math family up to 256]
 
 %% engine check
 \ifx\omathchar\@undefined
@@ -100,6 +102,12 @@
 
 %% LaTeX2e 2019/10/01 makes lots of commands robust;
 %% follow both old and new behavior
+%% -- Among the changes in 2019/10/01,
+%%    "making math delimiters robust with \MakeRobust"
+%%    was backed out and replaced with "engine protection"
+%%    in 2020/02/02.
+%%    (see https://github.com/latex3/latex2e/issues/251)
+
 \edef\omfcclvi@reset{%
   \catcode`\noexpand\&=\the\catcode`\&\relax
   \catcode`\noexpand\~=\the\catcode`\~\relax
@@ -140,12 +148,13 @@
     \ifnum#1<\sixt@@n\relax\else\@tempswafalse\fi
     \ifnum#2<\sixt@@n\relax\else\@tempswafalse\fi
   \if@tempswa
+&   \protected
     \xdef#3{\delimiter"\mathchar@type#4\hexnumber@#1#5\hexnumber@#2#6\relax}%
   \else
+&   \protected
     \xdef#3{\odelimiter"\mathchar@type#4\hexnumber@@#100#5%
                        "\hexnumber@@#200#6\relax}%
   \fi
-& \MakeRobust#3%
 }
 \def\set@@mathdelimiter#1#2#3#4#5{%
   \@tempswatrue
@@ -433,15 +442,24 @@
     \ifin@
       \begingroup
         \edef\reserved@a{\noexpand\in@
-          {\expandafter\@gobble\string\delimiter}%
-~         {\meaning#1}}%
-&         {\expandafter\meaning\csname\expandafter\@gobble\string#1\space\endcsname}}%
+            {\expandafter\@gobble\string\delimiter}{\meaning#1}}%
         \reserved@a
         \ifin@
-&         \expandafter\let\csname\expandafter\@gobble\string#1\space\endcsname\@undefined
           \oset@mathdelimiter{#1}{#2}{#3}{#4}{#5}{#6}%
           \@font@info{Redeclaring math delimiter \string#1}%
         \else
+      %%%%% BEGIN -- only for "real" format as of 2019-10-01 which used \MakeRobust
+        \edef\reserved@a{\noexpand\in@
+          {\expandafter\@gobble\string\delimiter}%
+          {\expandafter\meaning\csname\expandafter\@gobble\string#1\space\endcsname}}%
+        \reserved@a
+        \ifin@
+          \global % to cancel global assignment done by \MakeRobust
+          \expandafter\let\csname\expandafter\@gobble\string#1\space\endcsname\@undefined
+          \oset@mathdelimiter{#1}{#2}{#3}{#4}{#5}{#6}%
+          \@font@info{Redeclaring math delimiter \string#1}%
+        \else
+      %%%%% END
           \expandafter\ifx
             \csname\expandafter\@gobble\string#1\endcsname
             \relax
@@ -449,6 +467,9 @@
           \else
             \@latex@error{Command `\string#1' already defined}\@eha
           \fi
+      %%%%% BEGIN -- only for "real" format as of 2019-10-01 which used \MakeRobust
+        \fi
+      %%%%% END
         \fi
       \endgroup
     \else
@@ -481,9 +502,9 @@
     \numexpr"1000000*\mathchar@type#2+"10000*\csname sym#3\endcsname+#4%
   \count\tw@
     \numexpr"10000*\csname sym#5\endcsname+#6%
+& \protected
   \xdef#1{\odelimiter\number\count\z@\space \number\count\tw@}%
   \endgroup
-& \MakeRobust#1%
 }
 \@onlypreamble\oset@mathdelimiter
 \def\oset@@mathdelimiter#1#2#3#4#5{%
