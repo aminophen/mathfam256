@@ -1,11 +1,9 @@
 %
 % mathfam256.sty
-% 2020/01/22 v0.4  Hironobu Yamashita (aminophen)
-%   -- sync with LaTeX2e 2020-02-02 dev
-% 2019/09/14 v0.3  Hironobu Yamashita (aminophen)
-%   -- bug fix and support LaTeX2e 2019-10-01
-% 2018/01/22 v0.2  Hironobu Yamashita (aminophen)
-%   -- first CTAN version
+% 2020/01/23 v0.5  -- compatibility with amstext
+% 2020/01/22 v0.4  -- sync with LaTeX2e 2020-02-02 dev
+% 2019/09/14 v0.3  -- bug fix and support LaTeX2e 2019-10-01
+% 2018/01/22 v0.2  -- first CTAN version
 % 2016/12/26 v0.1  Hironobu Yamashita (aminophen)
 % 2009/02/20 v0.01 Kazuyoshi Yamamoto (ymt)
 %
@@ -18,7 +16,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{mathfam256}
-  [2020/01/22 v0.4 Extend math family up to 256]
+  [2020/01/23 v0.5 Extend math family up to 256]
 
 %% engine check
 \ifx\omathchar\@undefined
@@ -107,7 +105,6 @@
 %%    was backed out and replaced with "engine protection"
 %%    in 2020/02/02.
 %%    (see https://github.com/latex3/latex2e/issues/251)
-
 \edef\omfcclvi@reset{%
   \catcode`\noexpand\&=\the\catcode`\&\relax
   \catcode`\noexpand\~=\the\catcode`\~\relax
@@ -554,6 +551,32 @@
 
 %% reset
 \omfcclvi@reset
+
+%% patch: amstext.sty redefines \mathhexbox to use its own \text
+\let\omfcclvi@my@mathhexbox\mathhexbox
+\def\omfcclvi@patch@mathhexbox{%
+  \ifx\mathhexbox\omfcclvi@old@mathhexbox
+    \expandafter\@firstoftwo   % known -> info only
+  \else\ifx\mathhexbox\omfcclvi@my@mathhexbox
+    \expandafter\expandafter\expandafter\@firstoftwo   % known -> info only
+  \else
+    \expandafter\expandafter\expandafter\@secondoftwo  % unknown -> warning
+  \fi\fi
+  \PackageInfo\PackageWarning{mathfam256}{Redefining \string\mathhexbox}%
+  \let\mathhexbox\omfcclvi@new@mathhexbox
+  \let\omfcclvi@old@mathhexbox\@undefined
+  \let\omfcclvi@new@mathhexbox\@undefined
+  \let\omfcclvi@patch@mathhexbox\@undefined}
+\begingroup \catcode`\"=12
+\gdef\omfcclvi@old@mathhexbox#1#2#3{\text{$\m@th\mathchar"#1#2#3$}}
+\gdef\omfcclvi@new@mathhexbox#1#2#3{%
+  \ifnum"#1<\sixt@@n
+    \text{$\m@th \mathchar"#1#2#3$}%
+  \else
+    \text{$\m@th \omathchar"#100#2#3$}%
+  \fi}
+\endgroup
+\AtBeginDocument{\ifx\text\@undefined\else \omfcclvi@patch@mathhexbox \fi}
 
 %% all done
 \endinput
