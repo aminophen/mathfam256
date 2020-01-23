@@ -553,7 +553,7 @@
 \omfcclvi@reset
 
 %% patch: amstext.sty redefines \mathhexbox to use its own \text
-\let\omfcclvi@my@mathhexbox\mathhexbox
+\let\omfcclvi@my@mathhexbox\mathhexbox % save my own definition above
 \def\omfcclvi@patch@mathhexbox{%
   \ifx\mathhexbox\omfcclvi@old@mathhexbox
     \expandafter\@firstoftwo   % known -> info only
@@ -563,12 +563,14 @@
     \expandafter\expandafter\expandafter\@secondoftwo  % unknown -> warning
   \fi\fi
   \PackageInfo\PackageWarning{mathfam256}{Redefining \string\mathhexbox}%
-  \let\mathhexbox\omfcclvi@new@mathhexbox
+  \let\mathhexbox\omfcclvi@new@mathhexbox % copy it anyway
+  % save memory
+  \let\omfcclvi@my@mathhexbox\@undefined
   \let\omfcclvi@old@mathhexbox\@undefined
   \let\omfcclvi@new@mathhexbox\@undefined
   \let\omfcclvi@patch@mathhexbox\@undefined}
 \begingroup \catcode`\"=12
-\gdef\omfcclvi@old@mathhexbox#1#2#3{\text{$\m@th\mathchar"#1#2#3$}}
+\gdef\omfcclvi@old@mathhexbox#1#2#3{\text{$\m@th\mathchar"#1#2#3$}}% from amstext.sty
 \gdef\omfcclvi@new@mathhexbox#1#2#3{%
   \ifnum"#1<\sixt@@n
     \text{$\m@th \mathchar"#1#2#3$}%
