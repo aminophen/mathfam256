@@ -1,5 +1,6 @@
 KANJI = -kanji=utf8
-FONTMAP = -f ipaex.map -f ptex-ipaex.map
+#FONTMAP = -f ipaex.map -f ptex-ipaex.map
+FONTMAP = -f haranoaji.map -f ptex-haranoaji.map
 TEXMF = $(shell kpsewhich -var-value=TEXMFHOME)
 
 all: mathfam256.pdf
